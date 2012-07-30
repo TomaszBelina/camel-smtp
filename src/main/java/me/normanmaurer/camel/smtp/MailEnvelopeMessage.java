@@ -23,8 +23,9 @@ import java.io.InputStream;
 import java.util.Iterator;
 
 import org.apache.camel.impl.DefaultMessage;
+import org.apache.james.protocols.smtp.MailAddress;
 import org.apache.james.protocols.smtp.MailEnvelope;
-import org.apache.mailet.MailAddress;
+
 
 /**
  * Message implementation which can holds all data for a {@link MailEnvelope}.

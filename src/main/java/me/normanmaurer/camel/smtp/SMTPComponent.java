@@ -19,24 +19,40 @@
 package me.normanmaurer.camel.smtp;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 import org.apache.camel.Component;
 import org.apache.camel.Endpoint;
 import org.apache.camel.impl.DefaultComponent;
+import org.apache.camel.util.ObjectHelper;
 
 /**
- * {@link Component} which create new {@link SMTPEndpoint} instances 
- *
+ * {@link Component} which create new {@link SMTPEndpoint} instances
+ * 
  */
-public class SMTPComponent extends DefaultComponent{
-    SMTPURIConfiguration config = new SMTPURIConfiguration();
+public class SMTPComponent extends DefaultComponent {
 
-    @Override
-    protected Endpoint createEndpoint(String uri, String remaining, Map<String, Object> parameters) throws Exception {
-        config.parseURI(new URI(uri), parameters, this);
-        setProperties(config, parameters);
-        return new SMTPEndpoint(remaining, this, config);
-    }
+	@Override
+	protected Endpoint createEndpoint(String uri, String remaining,
+			Map<String, Object> parameters) throws Exception {
+		SMTPURIConfiguration config = new SMTPURIConfiguration(new URI(uri));
+
+		String domainString = getAndRemoveParameter(parameters, "localDomains",
+				String.class);
+		if (ObjectHelper.isNotEmpty(domainString)) {
+
+			StringTokenizer tokenizer = new StringTokenizer(domainString, ",");
+			List<String> localDomains = new ArrayList<String>();
+			while (tokenizer.hasMoreTokens()) {
+				localDomains.add(tokenizer.nextToken().trim());
+			}
+			config.setLocalDomains(localDomains);
+		}
+		setProperties(config, parameters);
+		return new SMTPEndpoint(remaining, this, config);
+	}
 
 }

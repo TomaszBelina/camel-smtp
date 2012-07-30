@@ -25,8 +25,6 @@ import java.util.Map;
 import javax.mail.Header;
 import javax.mail.internet.MimeMessage;
 
-import me.normanmaurer.camel.smtp.MailEnvelopeMessage;
-
 import org.apache.camel.EndpointInject;
 import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
@@ -44,8 +42,11 @@ public class SMTPTest extends CamelTestSupport{
     @Override
     protected RouteBuilder createRouteBuilder() {
         return new RouteBuilder() {
-            public void configure() {
-                from("james-smtp:localhost:2525").to("mock:result");
+            @Override
+			public void configure() {
+            	//from("file://d:/tmp?noop=true").to("mock:result");
+            	
+                from("james-smtp:localhost:2525?greeting=CamelSMTP").to("mock:result");
             }
         };
     }

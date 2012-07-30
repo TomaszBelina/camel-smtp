@@ -19,16 +19,15 @@
 package me.normanmaurer.camel.smtp;
 
 import java.net.InetSocketAddress;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.camel.Endpoint;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.impl.DefaultConsumer;
-import org.apache.james.protocols.impl.NettyServer;
+import org.apache.james.protocols.api.logger.ProtocolLoggerAdapter;
+import org.apache.james.protocols.netty.NettyServer;
 import org.apache.james.protocols.smtp.MailEnvelope;
-import org.apache.james.protocols.smtp.SMTPConfigurationImpl;
 import org.apache.james.protocols.smtp.SMTPProtocol;
 import org.apache.james.protocols.smtp.SMTPProtocolHandlerChain;
 import org.apache.james.protocols.smtp.SMTPSession;
@@ -36,17 +35,21 @@ import org.apache.james.protocols.smtp.core.AbstractAuthRequiredToRelayRcptHook;
 import org.apache.james.protocols.smtp.hook.HookResult;
 import org.apache.james.protocols.smtp.hook.HookReturnCode;
 import org.apache.james.protocols.smtp.hook.MessageHook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * Consumer which starts an SMTPServer and forward mails to the processer once they are received
+ * Consumer which starts an SMTPServer and forward mails to the processor once they are received
  * 
  *
  */
 public class SMTPConsumer extends DefaultConsumer {
 
-    private SMTPURIConfiguration config;
+    private final SMTPURIConfiguration config;
     private NettyServer server;
     private SMTPProtocolHandlerChain chain;
+    
+    private static final Logger LOG = LoggerFactory.getLogger(SMTPConsumer.class);
 
     public SMTPConsumer(Endpoint endpoint, Processor processor, SMTPURIConfiguration config) {
         super(endpoint, processor);
@@ -61,11 +64,9 @@ public class SMTPConsumer extends DefaultConsumer {
     @Override
     protected void doStart() throws Exception {
         super.doStart();
-        chain = new SMTPProtocolHandlerChain();
-        chain.addHook(new AllowToRelayHandler());
-        chain.addHook(new ProcessorMessageHook());
-        server = new NettyServer(new SMTPProtocol(chain, new SMTPConfigurationImpl()));
-        server.setListenAddresses(Arrays.asList(new InetSocketAddress(config.getBindIP(), config.getBindPort())));
+        chain = new SMTPProtocolHandlerChain(new AllowToRelayHandler(),new ProcessorMessageHook());
+        server = new NettyServer(new SMTPProtocol(chain,config,new ProtocolLoggerAdapter(LOG)));
+        server.setListenAddresses(new InetSocketAddress(config.getBindIP(), config.getBindPort()));
         server.bind();
     }
 

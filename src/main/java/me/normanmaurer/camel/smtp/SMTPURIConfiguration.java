@@ -19,12 +19,8 @@
 package me.normanmaurer.camel.smtp;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
 
-import org.apache.camel.util.URISupport;
 import org.apache.james.protocols.smtp.SMTPConfiguration;
 
 
@@ -34,55 +30,20 @@ import org.apache.james.protocols.smtp.SMTPConfiguration;
  */
 public class SMTPURIConfiguration implements SMTPConfiguration{
 
-    private String bindIP;
-    private int bindPort;
+    private final String bindIP;
+    private final int bindPort;
     private boolean enforceHeloEhlo = true;
     private boolean enforceBrackets = true;
-    private String greeting = "Camel SMTP 0.1";
-    private int resetLength = 0;
+    private String greeting = "Camel SMTP 1.0";
+    private String softwareName = "Camel SMTP 1.0";
+    private final int resetLength = 0;
     private long maxMessageSize = 0;
     private String helloName = "Camel SMTP";
     private List<String> localDomains;
-
-    /**
-     * Parse the given uri and set the configuration for it
-     * 
-     * @param uri
-     * @param parameters
-     * @param component
-     * @throws Exception
-     */
-    public void parseURI(URI uri, Map<String, Object> parameters, SMTPComponent component) throws Exception {
-        System.out.println(uri);
-
-        bindIP = uri.getHost();
+    
+    public SMTPURIConfiguration(URI uri) {
+    	bindIP = uri.getHost();
         bindPort = uri.getPort();
-
-     
-        Map<String, Object> settings = URISupport.parseParameters(uri);
-        if (settings.containsKey("enforceHeloEhlo")) {
-            enforceHeloEhlo = Boolean.valueOf((String) settings.get("enforceHeloEhlo"));
-        }
-        if (settings.containsKey("greeting")) {
-            greeting = (String) settings.get("greeting");
-        }
-        if (settings.containsKey("enforceBrackets")) {
-            enforceBrackets = Boolean.valueOf((String) settings.get("enforceBrackets"));
-        }
-        if (settings.containsKey("maxMessageSize")) {
-            maxMessageSize = (Integer.parseInt((String) settings.get("maxMessageSize")));
-        }
-        if (settings.containsKey("helloName")) {
-            helloName = (String) settings.get("helloName");
-        }
-        if (settings.containsKey("localDomains")) {
-            String domainString = (String) settings.get("localDomains");
-            StringTokenizer tokenizer = new StringTokenizer(domainString,",");
-            localDomains = new ArrayList<String>();
-            while (tokenizer.hasMoreTokens()) {
-                localDomains.add(tokenizer.nextToken().trim());
-            }
-        }
     }
 
     /*
@@ -107,14 +68,6 @@ public class SMTPURIConfiguration implements SMTPConfiguration{
      */
     public int getResetLength() {
         return resetLength;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.protocols.smtp.SMTPConfiguration#getSMTPGreeting()
-     */
-    public String getSMTPGreeting() {
-        return greeting;
     }
 
     /**
@@ -181,4 +134,58 @@ public class SMTPURIConfiguration implements SMTPConfiguration{
     public List<String> getLocalDomains() {
         return localDomains;
     }
+
+    /**
+     * Return the greeting which is output when connecting to the server
+     * 
+     * @return greeting
+     */
+	public String getGreeting() {
+		return greeting;
+	}
+
+	/**
+	 * Return the name of the SMTP software
+	 * 
+	 * @return name
+	 */
+	public String getSoftwareName() {
+		return softwareName;
+	}
+
+	public boolean isEnforceHeloEhlo() {
+		return enforceHeloEhlo;
+	}
+
+	public void setEnforceHeloEhlo(boolean enforceHeloEhlo) {
+		this.enforceHeloEhlo = enforceHeloEhlo;
+	}
+
+	public boolean isEnforceBrackets() {
+		return enforceBrackets;
+	}
+
+	public void setEnforceBrackets(boolean enforceBrackets) {
+		this.enforceBrackets = enforceBrackets;
+	}
+
+	public void setGreeting(String greeting) {
+		this.greeting = greeting;
+	}
+
+	public void setSoftwareName(String softwareName) {
+		this.softwareName = softwareName;
+	}
+
+	public void setMaxMessageSize(long maxMessageSize) {
+		this.maxMessageSize = maxMessageSize;
+	}
+
+	public void setHelloName(String helloName) {
+		this.helloName = helloName;
+	}
+
+	public void setLocalDomains(List<String> localDomains) {
+		this.localDomains = localDomains;
+	}
 }
