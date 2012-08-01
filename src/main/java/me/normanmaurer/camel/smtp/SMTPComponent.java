@@ -29,12 +29,17 @@ import org.apache.camel.Endpoint;
 import org.apache.camel.impl.DefaultComponent;
 import org.apache.camel.util.ObjectHelper;
 
+// TODO: Auto-generated Javadoc
 /**
+ * The Class SMTPComponent.
+ *
  * {@link Component} which create new {@link SMTPEndpoint} instances
- * 
  */
 public class SMTPComponent extends DefaultComponent {
 
+	/* (non-Javadoc)
+	 * @see org.apache.camel.impl.DefaultComponent#createEndpoint(java.lang.String, java.lang.String, java.util.Map)
+	 */
 	@Override
 	protected Endpoint createEndpoint(String uri, String remaining,
 			Map<String, Object> parameters) throws Exception {

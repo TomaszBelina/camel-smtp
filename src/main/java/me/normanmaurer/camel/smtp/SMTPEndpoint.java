@@ -25,14 +25,22 @@ import org.apache.camel.Processor;
 import org.apache.camel.Producer;
 import org.apache.camel.impl.DefaultEndpoint;
 
+// TODO: Auto-generated Javadoc
 /**
- * Endpoint which create {@link SMTPConsumer} instances 
- *
+ * Endpoint which create {@link SMTPConsumer} instances.
  */
 public class SMTPEndpoint extends DefaultEndpoint{
 
-    private SMTPURIConfiguration config;
+    /** The config. */
+    private final SMTPURIConfiguration config;
 
+    /**
+     * Instantiates a new sMTP endpoint.
+     *
+     * @param endPointUri the end point uri
+     * @param component the component
+     * @param config the config
+     */
     public SMTPEndpoint(String endPointUri, Component component, SMTPURIConfiguration config) {
         super(endPointUri, component);
         this.config = config;
@@ -46,14 +54,19 @@ public class SMTPEndpoint extends DefaultEndpoint{
     }
 
     /**
-     * Producing is not supported
+     * Producing is not supported.
+     *
+     * @return the producer
+     * @throws Exception the exception
      */
     public Producer createProducer() throws Exception {
         return null;
     }
 
     /**
-     * Not a singleton
+     * Not a singleton.
+     *
+     * @return true, if is singleton
      */
     public boolean isSingleton() {
         return false;

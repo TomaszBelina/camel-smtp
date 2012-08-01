@@ -19,107 +19,94 @@
 package me.normanmaurer.camel.smtp;
 
 import java.net.InetSocketAddress;
-import java.util.List;
+
+import me.normanmaurer.camel.smtp.authentication.AuthHookImpl;
+import me.normanmaurer.camel.smtp.relay.AllowToRelayHandler;
 
 import org.apache.camel.Endpoint;
-import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.impl.DefaultConsumer;
 import org.apache.james.protocols.api.logger.ProtocolLoggerAdapter;
 import org.apache.james.protocols.netty.NettyServer;
-import org.apache.james.protocols.smtp.MailEnvelope;
 import org.apache.james.protocols.smtp.SMTPProtocol;
 import org.apache.james.protocols.smtp.SMTPProtocolHandlerChain;
-import org.apache.james.protocols.smtp.SMTPSession;
-import org.apache.james.protocols.smtp.core.AbstractAuthRequiredToRelayRcptHook;
-import org.apache.james.protocols.smtp.hook.HookResult;
-import org.apache.james.protocols.smtp.hook.HookReturnCode;
-import org.apache.james.protocols.smtp.hook.MessageHook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+// TODO: Auto-generated Javadoc
 /**
- * Consumer which starts an SMTPServer and forward mails to the processor once they are received
- * 
- *
+ * Consumer which starts an SMTPServer and forward mails to the processor once
+ * they are received.
  */
 public class SMTPConsumer extends DefaultConsumer {
 
-    private final SMTPURIConfiguration config;
-    private NettyServer server;
-    private SMTPProtocolHandlerChain chain;
-    
-    private static final Logger LOG = LoggerFactory.getLogger(SMTPConsumer.class);
+	/** The config. */
+	final SMTPURIConfiguration config;
+	
+	/** The server. */
+	private NettyServer server;
+	
+	/** The chain. */
+	private SMTPProtocolHandlerChain chain;
 
-    public SMTPConsumer(Endpoint endpoint, Processor processor, SMTPURIConfiguration config) {
-        super(endpoint, processor);
-        this.config = config;
+	/** The Constant LOG. */
+	private static final Logger LOG = LoggerFactory
+			.getLogger(SMTPConsumer.class);
 
-        
-    }
+	/**
+	 * Instantiates a new sMTP consumer.
+	 *
+	 * @param endpoint the endpoint
+	 * @param processor the processor
+	 * @param config the config
+	 */
+	public SMTPConsumer(Endpoint endpoint, Processor processor,
+			SMTPURIConfiguration config) {
+		super(endpoint, processor);
+		this.config = config;
 
-    /**
-     * Startup the SMTP Server
-     */
-    @Override
-    protected void doStart() throws Exception {
-        super.doStart();
-        chain = new SMTPProtocolHandlerChain(new AllowToRelayHandler(),new ProcessorMessageHook());
-        server = new NettyServer(new SMTPProtocol(chain,config,new ProtocolLoggerAdapter(LOG)));
-        server.setListenAddresses(new InetSocketAddress(config.getBindIP(), config.getBindPort()));
-        server.bind();
-    }
+	}
 
-    /**
-     * Shutdown the SMTPServer
-     */
-    @Override
-    protected void doStop() throws Exception {
-        super.doStop();
-        server.unbind();
-    }
+	/**
+	 * Startup the SMTP Server.
+	 *
+	 * @throws Exception the exception
+	 */
+	@Override
+	protected void doStart() throws Exception {
+		super.doStart();
+		chain = new SMTPProtocolHandlerChain(true);
+		chain.add(new AllowToRelayHandler(config.getLocalDomains()));
+		if (config.getConsumerHook() != null) {
+			chain.add(config.getConsumerHook());
+		} else {
+			chain.add(new DefaultConsumerHook(this));
+		}
+		/*
+		 * if SMTP authentication has been activated - i.e., an authenticator
+		 * bean was specified in the config, instantiate the AuthHookImpl with
+		 * it
+		 */
+		if (config.getAuthenticator() != null) {
+			chain.add(new AuthHookImpl(config.getAuthenticator()));
+		}
+		chain.wireExtensibleHandlers();
+		server = new NettyServer(new SMTPProtocol(chain, config,
+				new ProtocolLoggerAdapter(LOG)));
+		server.setListenAddresses(new InetSocketAddress(config.getBindIP(),
+				config.getBindPort()));
+		server.bind();
+	}
 
- 
-    /**
-     * Check if the domain is local and if so accept the email. If not reject it
-     * 
-     *
-     */
-    private final class AllowToRelayHandler extends AbstractAuthRequiredToRelayRcptHook {
-
-        @Override
-        protected boolean isLocalDomain(String domain) {
-            List<String> domains = config.getLocalDomains();
-            if (domains == null) {
-                // no restriction was set.. accept it!
-                return true;
-            } else {
-                return domains.contains(domain.trim());
-            }
-        }
-        
-    }
-    /**
-     * Send the {@link Exchange} to the {@link Processor} after receiving a message via SMTP
-     *
-     */
-    private final class ProcessorMessageHook implements MessageHook {
-
-        /*
-         * (non-Javadoc)
-         * @see org.apache.james.protocols.smtp.hook.MessageHook#onMessage(org.apache.james.protocols.smtp.SMTPSession, org.apache.james.protocols.smtp.MailEnvelope)
-         */
-        public HookResult onMessage(SMTPSession arg0, MailEnvelope env) {
-            Exchange exchange = getEndpoint().createExchange();
-            exchange.setIn(new MailEnvelopeMessage(env));
-            try {
-                getProcessor().process(exchange);
-            } catch (Exception e) {
-                return new HookResult(HookReturnCode.DENYSOFT);
-            }
-            return new HookResult(HookReturnCode.OK);
-        }
-        
-    }
+	/**
+	 * Shutdown the SMTPServer.
+	 *
+	 * @throws Exception the exception
+	 */
+	@Override
+	protected void doStop() throws Exception {
+		super.doStop();
+		server.unbind();
+	}
 
 }

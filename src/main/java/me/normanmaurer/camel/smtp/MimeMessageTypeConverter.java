@@ -28,13 +28,21 @@ import javax.mail.internet.MimeMessage;
 
 import org.apache.camel.Converter;
 
+// TODO: Auto-generated Javadoc
 /**
- * Convert {@link InputStream} to {@link MimeMessage}
- *
+ * Convert {@link InputStream} to {@link MimeMessage}.
  */
 @Converter
 public class MimeMessageTypeConverter {
 
+        /**
+         * To mime message.
+         *
+         * @param in the in
+         * @return the mime message
+         * @throws MessagingException the messaging exception
+         * @throws IOException Signals that an I/O exception has occurred.
+         */
         @Converter
         public static MimeMessage toMimeMessage(InputStream in) throws MessagingException, IOException
         {

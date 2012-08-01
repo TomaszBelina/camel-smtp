@@ -27,6 +27,7 @@ import org.apache.james.protocols.smtp.MailAddress;
 import org.apache.james.protocols.smtp.MailEnvelope;
 
 
+// TODO: Auto-generated Javadoc
 /**
  * Message implementation which can holds all data for a {@link MailEnvelope}.
  * 
@@ -36,9 +37,7 @@ import org.apache.james.protocols.smtp.MailEnvelope;
  */
 public class MailEnvelopeMessage extends DefaultMessage{
 
-    /**
-     * String representation of the sender specified in the mail from transmission
-     */
+    /** String representation of the sender specified in the mail from transmission. */
     public final static String SMTP_SENDER_ADRRESS = "SMTP_SENDER_ADDRESS";
     
     /**
@@ -47,19 +46,22 @@ public class MailEnvelopeMessage extends DefaultMessage{
      */
     public final static String SMTP_RCPT_ADRRESS_LIST = "SMTP_RCPT_ADRRESS_LIST";
     
-    /**
-     * The message size
-     */
+    /** The message size. */
     public final static String SMTP_MESSAGE_SIZE = "SMTP_MESSAGE_SIZE";
 
+    /**
+     * Instantiates a new mail envelope message.
+     *
+     * @param env the env
+     */
     public MailEnvelopeMessage(MailEnvelope env) {
         populate(env);
     }
     
     /**
-     * Populate the Message with values from the given {@link MailEnvelope}
-     * 
-     * @param env
+     * Populate the Message with values from the given {@link MailEnvelope}.
+     *
+     * @param env the env
      */
     public void populate(MailEnvelope env) {
      
