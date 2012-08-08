@@ -18,7 +18,6 @@
  ****************************************************************/
 package me.normanmaurer.camel.smtp;
 
-
 import org.apache.camel.Component;
 import org.apache.camel.Consumer;
 import org.apache.camel.Processor;
@@ -29,47 +28,54 @@ import org.apache.camel.impl.DefaultEndpoint;
 /**
  * Endpoint which create {@link SMTPConsumer} instances.
  */
-public class SMTPEndpoint extends DefaultEndpoint{
+public class SMTPEndpoint extends DefaultEndpoint {
 
-    /** The config. */
-    private final SMTPURIConfiguration config;
+	/** The config. */
+	private final SMTPURIConfiguration config;
 
-    /**
-     * Instantiates a new sMTP endpoint.
-     *
-     * @param endPointUri the end point uri
-     * @param component the component
-     * @param config the config
-     */
-    public SMTPEndpoint(String endPointUri, Component component, SMTPURIConfiguration config) {
-        super(endPointUri, component);
-        this.config = config;
-    }
-    /*
-     * (non-Javadoc)
-     * @see org.apache.camel.Endpoint#createConsumer(org.apache.camel.Processor)
-     */
-    public Consumer createConsumer(Processor processor) throws Exception {
-        return new SMTPConsumer(this,processor, config);
-    }
+	/**
+	 * Instantiates a new sMTP endpoint.
+	 * 
+	 * @param endPointUri
+	 *            the end point uri
+	 * @param component
+	 *            the component
+	 * @param config
+	 *            the config
+	 */
+	public SMTPEndpoint(String endPointUri, Component component,
+			SMTPURIConfiguration config) {
+		super(endPointUri, component);
+		this.config = config;
+	}
 
-    /**
-     * Producing is not supported.
-     *
-     * @return the producer
-     * @throws Exception the exception
-     */
-    public Producer createProducer() throws Exception {
-        return null;
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.apache.camel.Endpoint#createConsumer(org.apache.camel.Processor)
+	 */
+	public Consumer createConsumer(Processor processor) throws Exception {
+		return new SMTPConsumer(this, processor, config);
+	}
 
-    /**
-     * Not a singleton.
-     *
-     * @return true, if is singleton
-     */
-    public boolean isSingleton() {
-        return false;
-    }
+	/**
+	 * Producing is not supported.
+	 * 
+	 * @return the producer
+	 * @throws Exception
+	 *             the exception
+	 */
+	public Producer createProducer() throws Exception {
+		return null;
+	}
+
+	/**
+	 * Not a singleton.
+	 * 
+	 * @return true, if is singleton
+	 */
+	public boolean isSingleton() {
+		return false;
+	}
 
 }

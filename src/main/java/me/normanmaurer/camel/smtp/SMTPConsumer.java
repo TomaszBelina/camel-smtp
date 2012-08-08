@@ -20,16 +20,31 @@ package me.normanmaurer.camel.smtp;
 
 import java.net.InetSocketAddress;
 
+import javax.net.ssl.SSLContext;
+
 import me.normanmaurer.camel.smtp.authentication.AuthHookImpl;
+import me.normanmaurer.camel.smtp.relay.AbstractAuthRequiredToRelayHandler;
 import me.normanmaurer.camel.smtp.relay.AllowToRelayHandler;
+import me.normanmaurer.camel.smtp.relay.DenyToRelayHandler;
 
 import org.apache.camel.Endpoint;
 import org.apache.camel.Processor;
 import org.apache.camel.impl.DefaultConsumer;
+import org.apache.commons.net.util.SSLContextUtils;
+import org.apache.james.protocols.api.Encryption;
 import org.apache.james.protocols.api.logger.ProtocolLoggerAdapter;
 import org.apache.james.protocols.netty.NettyServer;
+import org.apache.james.protocols.smtp.MailAddress;
 import org.apache.james.protocols.smtp.SMTPProtocol;
 import org.apache.james.protocols.smtp.SMTPProtocolHandlerChain;
+import org.apache.james.protocols.smtp.SMTPRetCode;
+import org.apache.james.protocols.smtp.SMTPSession;
+import org.apache.james.protocols.smtp.core.AbstractAuthRequiredToRelayRcptHook;
+import org.apache.james.protocols.smtp.core.esmtp.AuthCmdHandler;
+import org.apache.james.protocols.smtp.core.esmtp.StartTlsCmdHandler;
+import org.apache.james.protocols.smtp.dsn.DSNStatus;
+import org.apache.james.protocols.smtp.hook.HookResult;
+import org.apache.james.protocols.smtp.hook.HookReturnCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,10 +57,10 @@ public class SMTPConsumer extends DefaultConsumer {
 
 	/** The config. */
 	final SMTPURIConfiguration config;
-	
+
 	/** The server. */
 	private NettyServer server;
-	
+
 	/** The chain. */
 	private SMTPProtocolHandlerChain chain;
 
@@ -55,10 +70,13 @@ public class SMTPConsumer extends DefaultConsumer {
 
 	/**
 	 * Instantiates a new sMTP consumer.
-	 *
-	 * @param endpoint the endpoint
-	 * @param processor the processor
-	 * @param config the config
+	 * 
+	 * @param endpoint
+	 *            the endpoint
+	 * @param processor
+	 *            the processor
+	 * @param config
+	 *            the config
 	 */
 	public SMTPConsumer(Endpoint endpoint, Processor processor,
 			SMTPURIConfiguration config) {
@@ -69,19 +87,25 @@ public class SMTPConsumer extends DefaultConsumer {
 
 	/**
 	 * Startup the SMTP Server.
-	 *
-	 * @throws Exception the exception
+	 * 
+	 * @throws Exception
+	 *             the exception
 	 */
 	@Override
 	protected void doStart() throws Exception {
 		super.doStart();
 		chain = new SMTPProtocolHandlerChain(true);
-		chain.add(new AllowToRelayHandler(config.getLocalDomains()));
 		if (config.getConsumerHook() != null) {
 			chain.add(config.getConsumerHook());
 		} else {
 			chain.add(new DefaultConsumerHook(this));
 		}
+
+		AbstractAuthRequiredToRelayHandler abstractAuthRequiredToRelayHandler = config
+				.getAuthRequiredToRelayHandler();
+		abstractAuthRequiredToRelayHandler.setLocalDomains(config
+				.getLocalDomains());
+		chain.add(abstractAuthRequiredToRelayHandler);
 		/*
 		 * if SMTP authentication has been activated - i.e., an authenticator
 		 * bean was specified in the config, instantiate the AuthHookImpl with
@@ -91,8 +115,10 @@ public class SMTPConsumer extends DefaultConsumer {
 			chain.add(new AuthHookImpl(config.getAuthenticator()));
 		}
 		chain.wireExtensibleHandlers();
+
 		server = new NettyServer(new SMTPProtocol(chain, config,
 				new ProtocolLoggerAdapter(LOG)));
+
 		server.setListenAddresses(new InetSocketAddress(config.getBindIP(),
 				config.getBindPort()));
 		server.bind();
@@ -100,8 +126,9 @@ public class SMTPConsumer extends DefaultConsumer {
 
 	/**
 	 * Shutdown the SMTPServer.
-	 *
-	 * @throws Exception the exception
+	 * 
+	 * @throws Exception
+	 *             the exception
 	 */
 	@Override
 	protected void doStop() throws Exception {

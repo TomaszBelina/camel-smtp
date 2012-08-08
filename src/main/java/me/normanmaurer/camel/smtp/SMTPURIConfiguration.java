@@ -22,64 +22,70 @@ import java.net.URI;
 import java.util.List;
 
 import me.normanmaurer.camel.smtp.authentication.SMTPAuthenticator;
+import me.normanmaurer.camel.smtp.relay.AbstractAuthRequiredToRelayHandler;
+import me.normanmaurer.camel.smtp.relay.AllowToRelayHandler;
 
 import org.apache.james.protocols.smtp.SMTPConfiguration;
-
 
 /**
  * The Class SMTPURIConfiguration.
  */
-public class SMTPURIConfiguration implements SMTPConfiguration{
+public class SMTPURIConfiguration implements SMTPConfiguration {
 
-    /** The bind ip. */
-    private final String bindIP;
-    
-    /** The bind port. */
-    private final int bindPort;
-    
-    /** The enforce helo ehlo. */
-    private boolean enforceHeloEhlo = true;
-    
-    /** The enforce brackets. */
-    private boolean enforceBrackets = true;
-    
-    /** The greeting. */
-    private String greeting = "Camel SMTP 1.0";
-    
-    /** The software name. */
-    private String softwareName = "Camel SMTP 1.0";
-    
-    /** The reset length. */
-    private final int resetLength = 0;
-    
-    /** The max message size. */
-    private long maxMessageSize = 0;
-    
-    /** The hello name. */
-    private String helloName = "Camel SMTP";
-    
-    /** The local domains. */
-    private List<String> localDomains;
-    
-    /** The authenticator. */
-    private SMTPAuthenticator authenticator;
-    
-    /** The consumer hook. */
-    private DefaultConsumerHook consumerHook;
-    
-    /**
-     * Instantiates a new sMTPURI configuration.
-     *
-     * @param uri the uri
-     */
-    public SMTPURIConfiguration(URI uri) {
-    	bindIP = uri.getHost();
-        bindPort = uri.getPort();
-    }
+	/** The bind ip. */
+	private final String bindIP;
+
+	/** The bind port. */
+	private final int bindPort;
+
+	/** The enforce helo ehlo. */
+	private boolean enforceHeloEhlo = true;
+
+	/** The enforce brackets. */
+	private boolean enforceBrackets = true;
+
+	/** The greeting. */
+	private String greeting = "Camel SMTP 1.0";
+
+	/** The software name. */
+	private String softwareName = "Camel SMTP 1.0";
+
+	/** The reset length. */
+	private final int resetLength = 0;
+
+	/** The max message size. */
+	private long maxMessageSize = 0;
+
+	/** The hello name. */
+	private String helloName = "Camel SMTP";
+
+	/** The local domains. */
+	private List<String> localDomains;
+
+	/** The authenticator. */
+	private SMTPAuthenticator authenticator;
+
+	/** The consumer hook. */
+	private DefaultConsumerHook consumerHook;
+
+	private AbstractAuthRequiredToRelayHandler authRequiredToRelayHandler;
+
+	/**
+	 * Instantiates a new sMTPURI configuration.
+	 * 
+	 * @param uri
+	 *            the uri
+	 */
+	public SMTPURIConfiguration(URI uri) {
+		bindIP = uri.getHost();
+		bindPort = uri.getPort();
+		// we use the AllowToRelayHandler per default
+		authRequiredToRelayHandler = new AllowToRelayHandler(localDomains);
+	}
 
 	/**
 	 * Gets the authenticator.
-	 *
+	 * 
 	 * @return the authenticator
 	 */
 	public SMTPAuthenticator getAuthenticator() {
@@ -88,144 +94,145 @@ public class SMTPURIConfiguration implements SMTPConfiguration{
 
 	/**
 	 * Gets the bind ip.
-	 *
+	 * 
 	 * @return the bind ip
 	 */
-    public String getBindIP() {
-        return bindIP;
-    }
+	public String getBindIP() {
+		return bindIP;
+	}
 
 	/**
 	 * Gets the bind port.
-	 *
+	 * 
 	 * @return the bind port
 	 */
-    public int getBindPort() {
-        return bindPort;
-    }
+	public int getBindPort() {
+		return bindPort;
+	}
 
 	/**
 	 * Gets the consumer hook.
-	 *
+	 * 
 	 * @return the consumer hook
 	 */
 	public DefaultConsumerHook getConsumerHook() {
 		return consumerHook;
 	}
 
-    /* (non-Javadoc)
-     * @see org.apache.james.protocols.api.ProtocolConfiguration#getGreeting()
-     */
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.apache.james.protocols.api.ProtocolConfiguration#getGreeting()
+	 */
 	public String getGreeting() {
 		return greeting;
 	}
 
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.protocols.smtp.SMTPConfiguration#getHelloName()
-     */
-    public String getHelloName() {
-        return helloName;
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.apache.james.protocols.smtp.SMTPConfiguration#getHelloName()
+	 */
+	public String getHelloName() {
+		return helloName;
+	}
 
-    /**
-     * Gets the local domains.
-     *
-     * @return the local domains
-     */
-    public List<String> getLocalDomains() {
-        return localDomains;
-    }
+	/**
+	 * Gets the local domains.
+	 * 
+	 * @return the local domains
+	 */
+	public List<String> getLocalDomains() {
+		return localDomains;
+	}
 
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.protocols.smtp.SMTPConfiguration#getMaxMessageSize()
-     */
-    public long getMaxMessageSize() {
-        return maxMessageSize;
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.apache.james.protocols.smtp.SMTPConfiguration#getMaxMessageSize()
+	 */
+	public long getMaxMessageSize() {
+		return maxMessageSize;
+	}
 
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.protocols.smtp.SMTPConfiguration#getResetLength()
-     */
-    /**
-     * Gets the reset length.
-     *
-     * @return the reset length
-     */
-    public int getResetLength() {
-        return resetLength;
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.apache.james.protocols.smtp.SMTPConfiguration#getResetLength()
+	 */
+	/**
+	 * Gets the reset length.
+	 * 
+	 * @return the reset length
+	 */
+	public int getResetLength() {
+		return resetLength;
+	}
 
-    /* (non-Javadoc)
-     * @see org.apache.james.protocols.api.ProtocolConfiguration#getSoftwareName()
-     */
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.apache.james.protocols.api.ProtocolConfiguration#getSoftwareName()
+	 */
 	public String getSoftwareName() {
 		return softwareName;
 	}
 
-    /**
-     * Auth is not required.
-     *
-     * @param arg0 the arg0
-     * @return true, if is auth required
-     */
-    public boolean isAuthRequired(String arg0) {
-        return false;
-    }
-
-    /**
-     * Checks if is enforce brackets.
-     *
-     * @return true, if is enforce brackets
-     */
-    public boolean isEnforceBrackets() {
+	/**
+	 * Checks if is enforce brackets.
+	 * 
+	 * @return true, if is enforce brackets
+	 */
+	public boolean isEnforceBrackets() {
 		return enforceBrackets;
 	}
-    
-    /**
-     * Checks if is enforce helo ehlo.
-     *
-     * @return true, if is enforce helo ehlo
-     */
-    public boolean isEnforceHeloEhlo() {
+
+	/**
+	 * Checks if is enforce helo ehlo.
+	 * 
+	 * @return true, if is enforce helo ehlo
+	 */
+	public boolean isEnforceHeloEhlo() {
 		return enforceHeloEhlo;
 	}
-   
-    
-    /**
-     * Relaying is allowed.
-     *
-     * @param arg0 the arg0
-     * @return true, if is relaying allowed
-     */
-    public boolean isRelayingAllowed(String arg0) {
-        return true;
-    }
-    
-    /**
-     * Checks if is start tls supported.
-     *
-     * @return true, if is start tls supported
-     */
-    public boolean isStartTLSSupported() {
-        return false;
-    }
 
-    /**
-     * Sets the authenticator.
-     *
-     * @param authenticator the new authenticator
-     */
-    public void setAuthenticator(SMTPAuthenticator authenticator) {
+	/**
+	 * Relaying is allowed.
+	 * 
+	 * @param arg0
+	 *            the arg0
+	 * @return true, if is relaying allowed
+	 */
+	public boolean isRelayingAllowed(String arg0) {
+		return false;
+	}
+
+	/**
+	 * Checks if is start tls supported.
+	 * 
+	 * @return true, if is start tls supported
+	 */
+	public boolean isStartTLSSupported() {
+		return false;
+	}
+
+	/**
+	 * Sets the authenticator.
+	 * 
+	 * @param authenticator
+	 *            the new authenticator
+	 */
+	public void setAuthenticator(SMTPAuthenticator authenticator) {
 		this.authenticator = authenticator;
 	}
 
 	/**
 	 * Sets the consumer hook.
-	 *
-	 * @param consumerHook the new consumer hook
+	 * 
+	 * @param consumerHook
+	 *            the new consumer hook
 	 */
 	public void setConsumerHook(DefaultConsumerHook consumerHook) {
 		this.consumerHook = consumerHook;
@@ -233,8 +240,9 @@ public class SMTPURIConfiguration implements SMTPConfiguration{
 
 	/**
 	 * Sets the enforce brackets.
-	 *
-	 * @param enforceBrackets the new enforce brackets
+	 * 
+	 * @param enforceBrackets
+	 *            the new enforce brackets
 	 */
 	public void setEnforceBrackets(boolean enforceBrackets) {
 		this.enforceBrackets = enforceBrackets;
@@ -242,8 +250,9 @@ public class SMTPURIConfiguration implements SMTPConfiguration{
 
 	/**
 	 * Sets the enforce helo ehlo.
-	 *
-	 * @param enforceHeloEhlo the new enforce helo ehlo
+	 * 
+	 * @param enforceHeloEhlo
+	 *            the new enforce helo ehlo
 	 */
 	public void setEnforceHeloEhlo(boolean enforceHeloEhlo) {
 		this.enforceHeloEhlo = enforceHeloEhlo;
@@ -251,8 +260,9 @@ public class SMTPURIConfiguration implements SMTPConfiguration{
 
 	/**
 	 * Sets the greeting.
-	 *
-	 * @param greeting the new greeting
+	 * 
+	 * @param greeting
+	 *            the new greeting
 	 */
 	public void setGreeting(String greeting) {
 		this.greeting = greeting;
@@ -260,8 +270,9 @@ public class SMTPURIConfiguration implements SMTPConfiguration{
 
 	/**
 	 * Sets the hello name.
-	 *
-	 * @param helloName the new hello name
+	 * 
+	 * @param helloName
+	 *            the new hello name
 	 */
 	public void setHelloName(String helloName) {
 		this.helloName = helloName;
@@ -269,8 +280,9 @@ public class SMTPURIConfiguration implements SMTPConfiguration{
 
 	/**
 	 * Sets the local domains.
-	 *
-	 * @param localDomains the new local domains
+	 * 
+	 * @param localDomains
+	 *            the new local domains
 	 */
 	public void setLocalDomains(List<String> localDomains) {
 		this.localDomains = localDomains;
@@ -278,8 +290,9 @@ public class SMTPURIConfiguration implements SMTPConfiguration{
 
 	/**
 	 * Sets the max message size.
-	 *
-	 * @param maxMessageSize the new max message size
+	 * 
+	 * @param maxMessageSize
+	 *            the new max message size
 	 */
 	public void setMaxMessageSize(long maxMessageSize) {
 		this.maxMessageSize = maxMessageSize;
@@ -287,25 +300,50 @@ public class SMTPURIConfiguration implements SMTPConfiguration{
 
 	/**
 	 * Sets the software name.
-	 *
-	 * @param softwareName the new software name
+	 * 
+	 * @param softwareName
+	 *            the new software name
 	 */
 	public void setSoftwareName(String softwareName) {
 		this.softwareName = softwareName;
 	}
 
-    /* (non-Javadoc)
-     * @see org.apache.james.protocols.smtp.SMTPConfiguration#useAddressBracketsEnforcement()
-     */
-    public boolean useAddressBracketsEnforcement() {
-        return enforceBrackets;
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.apache.james.protocols.smtp.SMTPConfiguration#
+	 * useAddressBracketsEnforcement()
+	 */
+	public boolean useAddressBracketsEnforcement() {
+		return enforceBrackets;
+	}
 
 	/*
-     * (non-Javadoc)
-     * @see org.apache.james.protocols.smtp.SMTPConfiguration#useHeloEhloEnforcement()
-     */
-    public boolean useHeloEhloEnforcement() {
-        return enforceHeloEhlo;
-    }
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.apache.james.protocols.smtp.SMTPConfiguration#useHeloEhloEnforcement
+	 * ()
+	 */
+	public boolean useHeloEhloEnforcement() {
+		return enforceHeloEhlo;
+	}
+
+	public boolean isAuthRequired(String remoteIP) {
+		if (authenticator != null) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public AbstractAuthRequiredToRelayHandler getAuthRequiredToRelayHandler() {
+		return authRequiredToRelayHandler;
+	}
+
+	public void setAuthRequiredToRelayHandler(
+			AbstractAuthRequiredToRelayHandler authRequiredToRelayHook) {
+		authRequiredToRelayHandler = authRequiredToRelayHook;
+	}
+
 }

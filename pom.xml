@@ -157,6 +157,13 @@
 			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.james.protocols</groupId>
+			<artifactId>protocols-api</artifactId>
+			<version>${james.protocols.version}</version>
+			<type>test-jar</type>
+			<scope>test</scope>
+		</dependency>
 
 
 		<dependency>
@@ -234,5 +241,11 @@
 			<version>3.1</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>commons-codec</groupId>
+			<artifactId>commons-codec</artifactId>
+			<version>1.6</version>
+		</dependency>
+
 	</dependencies>
 </project>

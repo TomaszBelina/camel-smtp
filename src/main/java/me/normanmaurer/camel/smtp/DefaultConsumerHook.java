@@ -38,6 +38,7 @@ public class DefaultConsumerHook implements MessageHook {
 	public HookResult onMessage(SMTPSession arg0, MailEnvelope env) {
 		Exchange exchange = this.smtpConsumer.getEndpoint().createExchange();
 		exchange.setIn(new MailEnvelopeMessage(env));
+		System.out.println(arg0.isAuthSupported());
 		try {
 			this.smtpConsumer.getProcessor().process(exchange);
 		} catch (Exception e) {

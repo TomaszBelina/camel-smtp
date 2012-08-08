@@ -35,19 +35,22 @@ import org.apache.camel.Converter;
 @Converter
 public class MimeMessageTypeConverter {
 
-        /**
-         * To mime message.
-         *
-         * @param in the in
-         * @return the mime message
-         * @throws MessagingException the messaging exception
-         * @throws IOException Signals that an I/O exception has occurred.
-         */
-        @Converter
-        public static MimeMessage toMimeMessage(InputStream in) throws MessagingException, IOException
-        {
-            in.reset();
-            return new MimeMessage(Session.getDefaultInstance(new Properties()),in);
-        }
-    
+	/**
+	 * To mime message.
+	 * 
+	 * @param in
+	 *            the in
+	 * @return the mime message
+	 * @throws MessagingException
+	 *             the messaging exception
+	 * @throws IOException
+	 *             Signals that an I/O exception has occurred.
+	 */
+	@Converter
+	public static MimeMessage toMimeMessage(InputStream in)
+			throws MessagingException, IOException {
+		in.reset();
+		return new MimeMessage(Session.getDefaultInstance(new Properties()), in);
+	}
+
 }
