@@ -95,9 +95,14 @@ public class SMTPConsumer extends DefaultConsumer {
 		}
 		chain.wireExtensibleHandlers();
 
-		server = new NettyServer(new SMTPProtocol(chain, config,
-				new ProtocolLoggerAdapter(LOG)));
-
+		SMTPProtocol protocol = new SMTPProtocol(chain, config,
+				new ProtocolLoggerAdapter(LOG));
+		// check whether secure connection (either TLS or STARTTLS) is required
+		if (config.getEncryption() != null) {
+			server = new NettyServer(protocol, config.getEncryption());
+		} else {
+			server = new NettyServer(protocol);
+		}
 		server.setListenAddresses(new InetSocketAddress(config.getBindIP(),
 				config.getBindPort()));
 		server.bind();

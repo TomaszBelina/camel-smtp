@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.apache.camel.component.james.smtp.relay.AbstractAuthRequiredToRelayHandler;
 import org.apache.camel.component.james.smtp.relay.AllowToRelayHandler;
+import org.apache.james.protocols.api.Encryption;
 import org.apache.james.protocols.smtp.SMTPConfiguration;
 import org.apache.james.protocols.smtp.hook.AuthHook;
 
@@ -68,6 +69,8 @@ public class SMTPURIConfiguration implements SMTPConfiguration {
 	private DefaultConsumerHook consumerHook;
 
 	private AbstractAuthRequiredToRelayHandler authRequiredToRelayHandler;
+
+	private Encryption encryption;
 
 	/**
 	 * Instantiates a new sMTPURI configuration.
@@ -115,6 +118,10 @@ public class SMTPURIConfiguration implements SMTPConfiguration {
 	 */
 	public DefaultConsumerHook getConsumerHook() {
 		return consumerHook;
+	}
+
+	public Encryption getEncryption() {
+		return encryption;
 	}
 
 	/*
@@ -178,6 +185,11 @@ public class SMTPURIConfiguration implements SMTPConfiguration {
 		return softwareName;
 	}
 
+	public boolean isAuthRequired(String remoteIP) {
+		// auth is required if an auth hook was set
+		return getAuthHook() != null ? true : false;
+	}
+
 	/**
 	 * Checks if is enforce brackets.
 	 * 
@@ -233,6 +245,10 @@ public class SMTPURIConfiguration implements SMTPConfiguration {
 	 */
 	public void setConsumerHook(DefaultConsumerHook consumerHook) {
 		this.consumerHook = consumerHook;
+	}
+
+	public void setEncryption(Encryption encryption) {
+		this.encryption = encryption;
 	}
 
 	/**
@@ -324,11 +340,6 @@ public class SMTPURIConfiguration implements SMTPConfiguration {
 	 */
 	public boolean useHeloEhloEnforcement() {
 		return enforceHeloEhlo;
-	}
-
-	public boolean isAuthRequired(String remoteIP) {
-		// auth is required if an auth hook was set
-		return getAuthHook() != null ? true : false;
 	}
 
 }

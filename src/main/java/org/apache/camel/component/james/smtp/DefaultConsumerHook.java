@@ -10,8 +10,8 @@ import org.apache.james.protocols.smtp.hook.MessageHook;
 
 // TODO: Auto-generated Javadoc
 /**
- * Send the {@link Exchange} to the {@link Processor} after receiving a
- * message via SMTP.
+ * Send the {@link Exchange} to the {@link Processor} after receiving a message
+ * via SMTP.
  */
 public class DefaultConsumerHook implements MessageHook {
 
@@ -20,8 +20,9 @@ public class DefaultConsumerHook implements MessageHook {
 
 	/**
 	 * Instantiates a new default consumer hook.
-	 *
-	 * @param smtpConsumer the smtp consumer
+	 * 
+	 * @param smtpConsumer
+	 *            the smtp consumer
 	 */
 	public DefaultConsumerHook(SMTPConsumer smtpConsumer) {
 		this.smtpConsumer = smtpConsumer;
@@ -36,11 +37,10 @@ public class DefaultConsumerHook implements MessageHook {
 	 * org.apache.james.protocols.smtp.MailEnvelope)
 	 */
 	public HookResult onMessage(SMTPSession arg0, MailEnvelope env) {
-		Exchange exchange = this.smtpConsumer.getEndpoint().createExchange();
+		Exchange exchange = smtpConsumer.getEndpoint().createExchange();
 		exchange.setIn(new MailEnvelopeMessage(env));
-		System.out.println(arg0.isAuthSupported());
 		try {
-			this.smtpConsumer.getProcessor().process(exchange);
+			smtpConsumer.getProcessor().process(exchange);
 		} catch (Exception e) {
 			return new HookResult(HookReturnCode.DENYSOFT);
 		}

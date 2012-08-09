@@ -1,14 +1,6 @@
 package org.apache.camel.component.james.smtp;
 
-import java.io.InputStream;
-import java.util.Enumeration;
-import java.util.Map;
-
-import javax.mail.Header;
-import javax.mail.internet.MimeMessage;
-
 import org.apache.camel.EndpointInject;
-import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.james.smtp.relay.DenyToRelayHandler;
 import org.apache.camel.component.mock.MockEndpoint;
@@ -76,29 +68,7 @@ public class SMTPAuthenticatorTest extends CamelTestSupport {
 		client.sendShortMessageData(body);
 		client.quit();
 		client.disconnect();
-		System.out.println("Wait...");
 		resultEndpoint.expectedMessageCount(1);
-		resultEndpoint.expectedBodyReceived().body(InputStream.class);
-		Exchange ex = resultEndpoint.getReceivedExchanges().get(0);
-		Map<String, Object> headers = ex.getIn().getHeaders();
-		assertEquals(sender,
-				headers.get(MailEnvelopeMessage.SMTP_SENDER_ADRRESS));
-		assertEquals(rcpt,
-				headers.get(MailEnvelopeMessage.SMTP_RCPT_ADRRESS_LIST));
-
-		// check type converter
-		MimeMessage message = ex.getIn().getBody(MimeMessage.class);
-		Enumeration<Header> mHeaders = message.getAllHeaders();
-		Header header = null;
-		while (mHeaders.hasMoreElements()) {
-			header = mHeaders.nextElement();
-			if (header.getName().equals("Subject")) {
-				break;
-			}
-		}
-		assertNotNull(header);
-		assertEquals("Subject", header.getName());
-		assertEquals(header.getValue(), "test");
 
 		resultEndpoint.assertIsSatisfied();
 	}
@@ -126,7 +96,6 @@ public class SMTPAuthenticatorTest extends CamelTestSupport {
 		} catch (Exception e) {
 			// fail silently
 		}
-		System.out.println("Wait...");
 		resultEndpoint.expectedMessageCount(0);
 		resultEndpoint.assertIsSatisfied();
 	}
@@ -151,7 +120,6 @@ public class SMTPAuthenticatorTest extends CamelTestSupport {
 		} catch (Exception e) {
 			// fail silently
 		}
-		System.out.println("Wait...");
 		resultEndpoint.expectedMessageCount(0);
 		resultEndpoint.assertIsSatisfied();
 	}
