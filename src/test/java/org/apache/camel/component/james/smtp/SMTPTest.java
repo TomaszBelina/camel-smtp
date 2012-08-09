@@ -28,82 +28,84 @@ import javax.mail.internet.MimeMessage;
 import org.apache.camel.EndpointInject;
 import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.component.james.smtp.MailEnvelopeMessage;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.junit4.CamelTestSupport;
 import org.apache.commons.net.smtp.SMTPClient;
 import org.junit.Test;
 
-
 // TODO: Auto-generated Javadoc
 /**
  * The Class SMTPTest.
  */
-public class SMTPTest extends CamelTestSupport{
+public class SMTPTest extends CamelTestSupport {
 
-    /** The result endpoint. */
-    @EndpointInject(uri = "mock:result")
-    protected MockEndpoint resultEndpoint;
+	/** The result endpoint. */
+	@EndpointInject(uri = "mock:result")
+	protected MockEndpoint resultEndpoint;
 
-    /* (non-Javadoc)
-     * @see org.apache.camel.test.junit4.CamelTestSupport#createRouteBuilder()
-     */
-    @Override
-    protected RouteBuilder createRouteBuilder() {
-        return new RouteBuilder() {
-            @Override
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.apache.camel.test.junit4.CamelTestSupport#createRouteBuilder()
+	 */
+	@Override
+	protected RouteBuilder createRouteBuilder() {
+		return new RouteBuilder() {
+			@Override
 			public void configure() {
-            	//from("file://d:/tmp?noop=true").to("mock:result");
-            	
-                from("james-smtp:localhost:2525?greeting=CamelSMTP").to("mock:result");
-            }
-        };
-    }
+				// from("file://d:/tmp?noop=true").to("mock:result");
 
-    /**
-     * Test send matching message.
-     *
-     * @throws Exception the exception
-     */
-    @SuppressWarnings("unchecked")
-    @Test
-    public void testSendMatchingMessage() throws Exception {
-        String sender = "sender@localhost";
-        String rcpt = "rcpt@localhost";
-        String body = "Subject: test\r\n\r\nTestmail";
-        SMTPClient client = new SMTPClient();
-        client.connect("localhost", 2525);
-        client.helo("localhost");
-        client.setSender(sender);
-        client.addRecipient(rcpt);
-        
-        client.sendShortMessageData(body);
-        client.quit();
-        client.disconnect();
-        resultEndpoint.expectedMessageCount(1);
-        resultEndpoint.expectedBodyReceived().body(InputStream.class);
-        Exchange ex = resultEndpoint.getReceivedExchanges().get(0);
-        Map<String, Object> headers = ex.getIn().getHeaders();
-        assertEquals(sender, headers.get(MailEnvelopeMessage.SMTP_SENDER_ADRRESS));
-        assertEquals(rcpt, headers.get(MailEnvelopeMessage.SMTP_RCPT_ADRRESS_LIST));
-        
-        
+				from("james-smtp:localhost:2525?greeting=CamelSMTP").to(
+						"mock:result");
+			}
+		};
+	}
 
-        // check type converter
-        MimeMessage message = ex.getIn().getBody(MimeMessage.class);
-        Enumeration<Header> mHeaders = message.getAllHeaders();
-        Header header = null;
-        while (mHeaders.hasMoreElements()) {
-            header = mHeaders.nextElement();
-            if (header.getName().equals("Subject")) {
-                break;
-            }
-        }
-        assertNotNull(header);
-        assertEquals("Subject", header.getName());
-        assertEquals(header.getValue(), "test");
+	/**
+	 * Test send matching message.
+	 * 
+	 * @throws Exception
+	 *             the exception
+	 */
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testSendMatchingMessage() throws Exception {
+		String sender = "sender@localhost";
+		String rcpt = "rcpt@localhost";
+		String body = "Subject: test\r\n\r\nTestmail";
+		SMTPClient client = new SMTPClient();
+		client.connect("localhost", 2525);
+		client.helo("localhost");
+		client.setSender(sender);
+		client.addRecipient(rcpt);
 
-        resultEndpoint.assertIsSatisfied();
-    }
+		client.sendShortMessageData(body);
+		client.quit();
+		client.disconnect();
+		resultEndpoint.expectedMessageCount(1);
+		resultEndpoint.expectedBodyReceived().body(InputStream.class);
+		Exchange ex = resultEndpoint.getReceivedExchanges().get(0);
+		Map<String, Object> headers = ex.getIn().getHeaders();
+		assertEquals(sender,
+				headers.get(MailEnvelopeMessage.SMTP_SENDER_ADRRESS));
+		assertEquals(rcpt,
+				headers.get(MailEnvelopeMessage.SMTP_RCPT_ADRRESS_LIST));
+
+		// check type converter
+		MimeMessage message = ex.getIn().getBody(MimeMessage.class);
+		Enumeration<Header> mHeaders = message.getAllHeaders();
+		Header header = null;
+		while (mHeaders.hasMoreElements()) {
+			header = mHeaders.nextElement();
+			if (header.getName().equals("Subject")) {
+				break;
+			}
+		}
+		assertNotNull(header);
+		assertEquals("Subject", header.getName());
+		assertEquals(header.getValue(), "test");
+
+		resultEndpoint.assertIsSatisfied();
+	}
 
 }

@@ -20,31 +20,14 @@ package org.apache.camel.component.james.smtp;
 
 import java.net.InetSocketAddress;
 
-import javax.net.ssl.SSLContext;
-
-
 import org.apache.camel.Endpoint;
 import org.apache.camel.Processor;
-import org.apache.camel.component.james.smtp.authentication.AuthHookImpl;
 import org.apache.camel.component.james.smtp.relay.AbstractAuthRequiredToRelayHandler;
-import org.apache.camel.component.james.smtp.relay.AllowToRelayHandler;
-import org.apache.camel.component.james.smtp.relay.DenyToRelayHandler;
 import org.apache.camel.impl.DefaultConsumer;
-import org.apache.commons.net.util.SSLContextUtils;
-import org.apache.james.protocols.api.Encryption;
 import org.apache.james.protocols.api.logger.ProtocolLoggerAdapter;
 import org.apache.james.protocols.netty.NettyServer;
-import org.apache.james.protocols.smtp.MailAddress;
 import org.apache.james.protocols.smtp.SMTPProtocol;
 import org.apache.james.protocols.smtp.SMTPProtocolHandlerChain;
-import org.apache.james.protocols.smtp.SMTPRetCode;
-import org.apache.james.protocols.smtp.SMTPSession;
-import org.apache.james.protocols.smtp.core.AbstractAuthRequiredToRelayRcptHook;
-import org.apache.james.protocols.smtp.core.esmtp.AuthCmdHandler;
-import org.apache.james.protocols.smtp.core.esmtp.StartTlsCmdHandler;
-import org.apache.james.protocols.smtp.dsn.DSNStatus;
-import org.apache.james.protocols.smtp.hook.HookResult;
-import org.apache.james.protocols.smtp.hook.HookReturnCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -106,13 +89,9 @@ public class SMTPConsumer extends DefaultConsumer {
 		abstractAuthRequiredToRelayHandler.setLocalDomains(config
 				.getLocalDomains());
 		chain.add(abstractAuthRequiredToRelayHandler);
-		/*
-		 * if SMTP authentication has been activated - i.e., an authenticator
-		 * bean was specified in the config, instantiate the AuthHookImpl with
-		 * it
-		 */
-		if (config.getAuthenticator() != null) {
-			chain.add(new AuthHookImpl(config.getAuthenticator()));
+
+		if (config.getAuthHook() != null) {
+			chain.add(config.getAuthHook());
 		}
 		chain.wireExtensibleHandlers();
 

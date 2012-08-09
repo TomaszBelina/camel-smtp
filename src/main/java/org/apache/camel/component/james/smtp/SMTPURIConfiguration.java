@@ -21,11 +21,10 @@ package org.apache.camel.component.james.smtp;
 import java.net.URI;
 import java.util.List;
 
-
-import org.apache.camel.component.james.smtp.authentication.SMTPAuthenticator;
 import org.apache.camel.component.james.smtp.relay.AbstractAuthRequiredToRelayHandler;
 import org.apache.camel.component.james.smtp.relay.AllowToRelayHandler;
 import org.apache.james.protocols.smtp.SMTPConfiguration;
+import org.apache.james.protocols.smtp.hook.AuthHook;
 
 /**
  * The Class SMTPURIConfiguration.
@@ -63,7 +62,7 @@ public class SMTPURIConfiguration implements SMTPConfiguration {
 	private List<String> localDomains;
 
 	/** The authenticator. */
-	private SMTPAuthenticator authenticator;
+	private AuthHook authHook;
 
 	/** The consumer hook. */
 	private DefaultConsumerHook consumerHook;
@@ -83,13 +82,12 @@ public class SMTPURIConfiguration implements SMTPConfiguration {
 		authRequiredToRelayHandler = new AllowToRelayHandler(localDomains);
 	}
 
-	/**
-	 * Gets the authenticator.
-	 * 
-	 * @return the authenticator
-	 */
-	public SMTPAuthenticator getAuthenticator() {
-		return authenticator;
+	public AuthHook getAuthHook() {
+		return authHook;
+	}
+
+	public AbstractAuthRequiredToRelayHandler getAuthRequiredToRelayHandler() {
+		return authRequiredToRelayHandler;
 	}
 
 	/**
@@ -218,14 +216,13 @@ public class SMTPURIConfiguration implements SMTPConfiguration {
 		return false;
 	}
 
-	/**
-	 * Sets the authenticator.
-	 * 
-	 * @param authenticator
-	 *            the new authenticator
-	 */
-	public void setAuthenticator(SMTPAuthenticator authenticator) {
-		this.authenticator = authenticator;
+	public void setAuthHook(AuthHook authHook) {
+		this.authHook = authHook;
+	}
+
+	public void setAuthRequiredToRelayHandler(
+			AbstractAuthRequiredToRelayHandler authRequiredToRelayHook) {
+		authRequiredToRelayHandler = authRequiredToRelayHook;
 	}
 
 	/**
@@ -330,20 +327,8 @@ public class SMTPURIConfiguration implements SMTPConfiguration {
 	}
 
 	public boolean isAuthRequired(String remoteIP) {
-		if (authenticator != null) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	public AbstractAuthRequiredToRelayHandler getAuthRequiredToRelayHandler() {
-		return authRequiredToRelayHandler;
-	}
-
-	public void setAuthRequiredToRelayHandler(
-			AbstractAuthRequiredToRelayHandler authRequiredToRelayHook) {
-		authRequiredToRelayHandler = authRequiredToRelayHook;
+		// auth is required if an auth hook was set
+		return getAuthHook() != null ? true : false;
 	}
 
 }

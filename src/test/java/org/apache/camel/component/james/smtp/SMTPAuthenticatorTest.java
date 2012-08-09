@@ -7,12 +7,9 @@ import java.util.Map;
 import javax.mail.Header;
 import javax.mail.internet.MimeMessage;
 
-
 import org.apache.camel.EndpointInject;
 import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.component.james.smtp.MailEnvelopeMessage;
-import org.apache.camel.component.james.smtp.authentication.SMTPAuthenticator;
 import org.apache.camel.component.james.smtp.relay.DenyToRelayHandler;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.impl.JndiRegistry;
@@ -20,6 +17,9 @@ import org.apache.camel.test.junit4.CamelTestSupport;
 import org.apache.commons.net.smtp.AuthenticatingSMTPClient;
 import org.apache.commons.net.smtp.AuthenticatingSMTPClient.AUTH_METHOD;
 import org.apache.commons.net.smtp.SMTPClient;
+import org.apache.james.protocols.smtp.SMTPSession;
+import org.apache.james.protocols.smtp.hook.AuthHook;
+import org.apache.james.protocols.smtp.hook.HookResult;
 import org.junit.Test;
 
 public class SMTPAuthenticatorTest extends CamelTestSupport {
@@ -35,7 +35,7 @@ public class SMTPAuthenticatorTest extends CamelTestSupport {
 	@Override
 	protected JndiRegistry createRegistry() throws Exception {
 		JndiRegistry registry = super.createRegistry();
-		registry.bind("myAuthenticator", new TestSMTPAuthenticator());
+		registry.bind("myAuthHook", new TestSMTPAuthenticator());
 		registry.bind("denyToRelayHandler", new DenyToRelayHandler());
 		return registry;
 	}
@@ -51,7 +51,7 @@ public class SMTPAuthenticatorTest extends CamelTestSupport {
 			@Override
 			public void configure() {
 				from(
-						"james-smtp:localhost:2525?greeting=CamelSMTP&authenticator=#myAuthenticator&authRequiredToRelayHandler=#denyToRelayHandler")
+						"james-smtp:localhost:2525?greeting=CamelSMTP&authHook=#myAuthHook&authRequiredToRelayHandler=#denyToRelayHandler")
 						.to("mock:result");
 			}
 		};
@@ -76,7 +76,6 @@ public class SMTPAuthenticatorTest extends CamelTestSupport {
 		client.sendShortMessageData(body);
 		client.quit();
 		client.disconnect();
-		Thread.sleep(2000);
 		System.out.println("Wait...");
 		resultEndpoint.expectedMessageCount(1);
 		resultEndpoint.expectedBodyReceived().body(InputStream.class);
@@ -112,7 +111,6 @@ public class SMTPAuthenticatorTest extends CamelTestSupport {
 		String body = "Subject: test\r\n\r\nTestmail";
 		AuthenticatingSMTPClient client = new AuthenticatingSMTPClient();
 		client.connect("localhost", 2525);
-		;
 		client.elogin("localhost");
 		// client.execTLS();
 		boolean isAuthenticated = client.auth(AUTH_METHOD.PLAIN, TEST_USER,
@@ -128,12 +126,11 @@ public class SMTPAuthenticatorTest extends CamelTestSupport {
 		} catch (Exception e) {
 			// fail silently
 		}
-		Thread.sleep(2000);
 		System.out.println("Wait...");
 		resultEndpoint.expectedMessageCount(0);
 		resultEndpoint.assertIsSatisfied();
 	}
-	
+
 	@Test
 	public void noAuthenticationFails() throws Exception {
 		resultEndpoint.reset();
@@ -154,18 +151,20 @@ public class SMTPAuthenticatorTest extends CamelTestSupport {
 		} catch (Exception e) {
 			// fail silently
 		}
-		Thread.sleep(2000);
 		System.out.println("Wait...");
 		resultEndpoint.expectedMessageCount(0);
 		resultEndpoint.assertIsSatisfied();
 	}
 
-	private final class TestSMTPAuthenticator implements SMTPAuthenticator {
-		public boolean authenticate(String username, String password) {
+	private final class TestSMTPAuthenticator implements AuthHook {
+
+		public HookResult doAuth(SMTPSession session, String username,
+				String password) {
 			if (TEST_USER.equals(username) && TEST_PASSWORD.equals(password)) {
-				return true;
+				session.setRelayingAllowed(true);
+				return HookResult.ok();
 			} else {
-				return false;
+				return HookResult.disconnect();
 			}
 		}
 	}
