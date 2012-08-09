@@ -55,8 +55,7 @@ public class SMTPTest extends CamelTestSupport {
 			public void configure() {
 				// from("file://d:/tmp?noop=true").to("mock:result");
 
-				from("james-smtp:localhost:2525?greeting=CamelSMTP").to(
-						"mock:result");
+				from("james-smtp:localhost:2525").to("mock:result");
 			}
 		};
 	}

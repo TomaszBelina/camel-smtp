@@ -45,10 +45,10 @@ public class SMTPURIConfiguration implements SMTPConfiguration {
 	private boolean enforceBrackets = true;
 
 	/** The greeting. */
-	private String greeting = "Camel SMTP 1.0";
+	private String greeting = "smtp.example.com";
 
 	/** The software name. */
-	private String softwareName = "Camel SMTP 1.0";
+	private String softwareName = "Apache Camel SMTP Server/based on Apache James";
 
 	/** The reset length. */
 	private final int resetLength = 0;
@@ -57,7 +57,7 @@ public class SMTPURIConfiguration implements SMTPConfiguration {
 	private long maxMessageSize = 0;
 
 	/** The hello name. */
-	private String helloName = "Camel SMTP";
+	private String helloName = "Nice to meet you!";
 
 	/** The local domains. */
 	private List<String> localDomains;
