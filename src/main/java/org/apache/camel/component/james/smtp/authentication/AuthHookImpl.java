@@ -1,4 +1,4 @@
-package me.normanmaurer.camel.smtp.authentication;
+package org.apache.camel.component.james.smtp.authentication;
 
 import static org.apache.camel.util.ObjectHelper.isEmpty;
 

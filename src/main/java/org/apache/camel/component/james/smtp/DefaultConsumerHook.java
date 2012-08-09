@@ -1,4 +1,4 @@
-package me.normanmaurer.camel.smtp;
+package org.apache.camel.component.james.smtp;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;

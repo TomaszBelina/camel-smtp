@@ -16,15 +16,15 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-package me.normanmaurer.camel.smtp;
+package org.apache.camel.component.james.smtp;
 
 import java.net.URI;
 import java.util.List;
 
-import me.normanmaurer.camel.smtp.authentication.SMTPAuthenticator;
-import me.normanmaurer.camel.smtp.relay.AbstractAuthRequiredToRelayHandler;
-import me.normanmaurer.camel.smtp.relay.AllowToRelayHandler;
 
+import org.apache.camel.component.james.smtp.authentication.SMTPAuthenticator;
+import org.apache.camel.component.james.smtp.relay.AbstractAuthRequiredToRelayHandler;
+import org.apache.camel.component.james.smtp.relay.AllowToRelayHandler;
 import org.apache.james.protocols.smtp.SMTPConfiguration;
 
 /**

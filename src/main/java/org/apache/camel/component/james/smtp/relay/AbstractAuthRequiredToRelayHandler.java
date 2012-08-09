@@ -1,4 +1,4 @@
-package me.normanmaurer.camel.smtp.relay;
+package org.apache.camel.component.james.smtp.relay;
 
 import java.util.List;
 

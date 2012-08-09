@@ -11,9 +11,9 @@
 	language governing permissions and limitations under the License. -->
 <project>
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>me.normanmaurer</groupId>
-	<artifactId>camel-smtp</artifactId>
-	<name>Camel SMTP</name>
+	<groupId>org.apache.camel</groupId>
+	<artifactId>camel-james-smtp</artifactId>
+	<name>Camel James SMTP Server</name>
 	<version>0.1-SNAPSHOT</version>
 	<description>Camel component which consume messages via SMTP</description>
 	<url>https://github.com/normanmaurer/camel-smtp</url>

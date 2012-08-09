@@ -1,4 +1,4 @@
-package me.normanmaurer.camel.smtp;
+package org.apache.camel.component.james.smtp;
 
 import java.io.InputStream;
 import java.util.Enumeration;
@@ -7,12 +7,13 @@ import java.util.Map;
 import javax.mail.Header;
 import javax.mail.internet.MimeMessage;
 
-import me.normanmaurer.camel.smtp.authentication.SMTPAuthenticator;
-import me.normanmaurer.camel.smtp.relay.DenyToRelayHandler;
 
 import org.apache.camel.EndpointInject;
 import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.component.james.smtp.MailEnvelopeMessage;
+import org.apache.camel.component.james.smtp.authentication.SMTPAuthenticator;
+import org.apache.camel.component.james.smtp.relay.DenyToRelayHandler;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.impl.JndiRegistry;
 import org.apache.camel.test.junit4.CamelTestSupport;

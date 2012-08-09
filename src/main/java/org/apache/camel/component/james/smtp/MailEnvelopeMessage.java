@@ -17,7 +17,7 @@
  * under the License.                                           *
  ****************************************************************/
 
-package me.normanmaurer.camel.smtp;
+package org.apache.camel.component.james.smtp;
 
 import java.io.InputStream;
 import java.util.Iterator;

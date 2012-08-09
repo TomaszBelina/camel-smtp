@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-package me.normanmaurer.camel.smtp;
+package org.apache.camel.component.james.smtp;
 
 import org.apache.camel.Component;
 import org.apache.camel.Consumer;
