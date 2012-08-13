@@ -24,6 +24,7 @@
 	<properties>
 		<camel.version>2.10.0</camel.version>
 		<james.protocols.version>1.6.2</james.protocols.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	<repositories>
 
