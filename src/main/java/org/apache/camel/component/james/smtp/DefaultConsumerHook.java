@@ -16,7 +16,7 @@ import org.apache.james.protocols.smtp.hook.MessageHook;
 public class DefaultConsumerHook implements MessageHook {
 
 	/** The smtp consumer. */
-	private final SMTPConsumer smtpConsumer;
+	protected final SMTPConsumer smtpConsumer;
 
 	/**
 	 * Instantiates a new default consumer hook.
