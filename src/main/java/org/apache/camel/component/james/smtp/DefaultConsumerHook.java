@@ -16,7 +16,7 @@ import org.apache.james.protocols.smtp.hook.MessageHook;
 public class DefaultConsumerHook implements MessageHook {
 
 	/** The smtp consumer. */
-	protected final SMTPConsumer smtpConsumer;
+	protected SMTPConsumer smtpConsumer;
 
 	/**
 	 * Instantiates a new default consumer hook.
@@ -24,8 +24,7 @@ public class DefaultConsumerHook implements MessageHook {
 	 * @param smtpConsumer
 	 *            the smtp consumer
 	 */
-	public DefaultConsumerHook(SMTPConsumer smtpConsumer) {
-		this.smtpConsumer = smtpConsumer;
+	public DefaultConsumerHook() {
 	}
 
 	/*
@@ -45,6 +44,14 @@ public class DefaultConsumerHook implements MessageHook {
 			return new HookResult(HookReturnCode.DENYSOFT);
 		}
 		return new HookResult(HookReturnCode.OK);
+	}
+
+	public SMTPConsumer getSmtpConsumer() {
+		return smtpConsumer;
+	}
+
+	public void setSmtpConsumer(SMTPConsumer smtpConsumer) {
+		this.smtpConsumer = smtpConsumer;
 	}
 
 }

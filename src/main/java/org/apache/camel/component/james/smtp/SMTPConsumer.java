@@ -78,11 +78,15 @@ public class SMTPConsumer extends DefaultConsumer {
 	protected void doStart() throws Exception {
 		super.doStart();
 		chain = new SMTPProtocolHandlerChain(true);
+		DefaultConsumerHook consumerHook;
 		if (config.getConsumerHook() != null) {
-			chain.add(config.getConsumerHook());
+			consumerHook = config.getConsumerHook();
 		} else {
-			chain.add(new DefaultConsumerHook(this));
+			consumerHook = new DefaultConsumerHook();
+
 		}
+		consumerHook.setSmtpConsumer(this);
+		chain.add(consumerHook);
 
 		AbstractAuthRequiredToRelayHandler abstractAuthRequiredToRelayHandler = config
 				.getAuthRequiredToRelayHandler();
