@@ -13,7 +13,7 @@ import org.apache.james.protocols.smtp.hook.MessageHook;
  * Send the {@link Exchange} to the {@link Processor} after receiving a message
  * via SMTP.
  */
-public class DefaultConsumerHook implements MessageHook {
+public class DefaultMessageHook implements MessageHook {
 
 	/** The smtp consumer. */
 	protected SMTPConsumer smtpConsumer;
@@ -24,7 +24,7 @@ public class DefaultConsumerHook implements MessageHook {
 	 * @param smtpConsumer
 	 *            the smtp consumer
 	 */
-	public DefaultConsumerHook() {
+	public DefaultMessageHook() {
 	}
 
 	/*

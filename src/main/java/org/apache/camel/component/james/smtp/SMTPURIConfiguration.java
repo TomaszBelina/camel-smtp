@@ -66,7 +66,7 @@ public class SMTPURIConfiguration implements SMTPConfiguration {
 	private AuthHook authHook;
 
 	/** The consumer hook. */
-	private DefaultConsumerHook consumerHook;
+	private DefaultMessageHook messageHook;
 
 	private AbstractAuthRequiredToRelayHandler authRequiredToRelayHandler;
 
@@ -116,8 +116,8 @@ public class SMTPURIConfiguration implements SMTPConfiguration {
 	 * 
 	 * @return the consumer hook
 	 */
-	public DefaultConsumerHook getConsumerHook() {
-		return consumerHook;
+	public DefaultMessageHook getMessageHook() {
+		return messageHook;
 	}
 
 	public Encryption getEncryption() {
@@ -240,11 +240,11 @@ public class SMTPURIConfiguration implements SMTPConfiguration {
 	/**
 	 * Sets the consumer hook.
 	 * 
-	 * @param consumerHook
+	 * @param messageHook
 	 *            the new consumer hook
 	 */
-	public void setConsumerHook(DefaultConsumerHook consumerHook) {
-		this.consumerHook = consumerHook;
+	public void setMessageHook(DefaultMessageHook consumerHook) {
+		this.messageHook = consumerHook;
 	}
 
 	public void setEncryption(Encryption encryption) {

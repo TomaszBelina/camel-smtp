@@ -78,11 +78,11 @@ public class SMTPConsumer extends DefaultConsumer {
 	protected void doStart() throws Exception {
 		super.doStart();
 		chain = new SMTPProtocolHandlerChain(true);
-		DefaultConsumerHook consumerHook;
-		if (config.getConsumerHook() != null) {
-			consumerHook = config.getConsumerHook();
+		DefaultMessageHook consumerHook;
+		if (config.getMessageHook() != null) {
+			consumerHook = config.getMessageHook();
 		} else {
-			consumerHook = new DefaultConsumerHook();
+			consumerHook = new DefaultMessageHook();
 
 		}
 		consumerHook.setSmtpConsumer(this);
