@@ -4,15 +4,24 @@ import org.apache.camel.EndpointInject;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.impl.JndiRegistry;
+import org.apache.camel.test.AvailablePortFinder;
 import org.apache.camel.test.junit4.CamelTestSupport;
 import org.apache.commons.net.smtp.SMTPReply;
 import org.apache.commons.net.smtp.SMTPSClient;
 import org.apache.james.protocols.api.Encryption;
 import org.apache.james.protocols.api.utils.BogusSslContextFactory;
 import org.apache.james.protocols.api.utils.BogusTrustManagerFactory;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class SMTPSTest extends CamelTestSupport {
+
+	private static int port = 0;
+
+	@BeforeClass
+	public static void findPort() {
+		port = AvailablePortFinder.getNextAvailable();
+	}
 
 	/** The result endpoint. */
 	@EndpointInject(uri = "mock:result")
@@ -40,8 +49,8 @@ public class SMTPSTest extends CamelTestSupport {
 			public void configure() {
 				// from("file://d:/tmp?noop=true").to("mock:result");
 
-				from("james-smtp:localhost:465?encryption=#encryption").to(
-						"mock:result");
+				from("james-smtp:localhost:" + port + "?encryption=#encryption")
+						.to("mock:result");
 			}
 		};
 	}
@@ -53,7 +62,7 @@ public class SMTPSTest extends CamelTestSupport {
 		String rcpt = "rcpt@localhost";
 		String body = "Subject: test\r\n\r\nTestmail";
 		SMTPSClient client = createClient();
-		client.connect("localhost", 465);
+		client.connect("localhost", port);
 		assertTrue(SMTPReply.isPositiveCompletion(client.getReplyCode()));
 		client.helo("localhost");
 		client.setSender(sender);

@@ -5,6 +5,7 @@ import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.james.smtp.relay.DenyToRelayHandler;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.impl.JndiRegistry;
+import org.apache.camel.test.AvailablePortFinder;
 import org.apache.camel.test.junit4.CamelTestSupport;
 import org.apache.commons.net.smtp.AuthenticatingSMTPClient;
 import org.apache.commons.net.smtp.AuthenticatingSMTPClient.AUTH_METHOD;
@@ -12,6 +13,7 @@ import org.apache.commons.net.smtp.SMTPClient;
 import org.apache.james.protocols.smtp.SMTPSession;
 import org.apache.james.protocols.smtp.hook.AuthHook;
 import org.apache.james.protocols.smtp.hook.HookResult;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class SMTPAuthenticatorTest extends CamelTestSupport {
@@ -23,6 +25,13 @@ public class SMTPAuthenticatorTest extends CamelTestSupport {
 	/** The result endpoint. */
 	@EndpointInject(uri = "mock:result")
 	protected MockEndpoint resultEndpoint;
+
+	private static int port;
+
+	@BeforeClass
+	public static void findPort() {
+		port = AvailablePortFinder.getNextAvailable();
+	}
 
 	@Override
 	protected JndiRegistry createRegistry() throws Exception {
@@ -43,7 +52,9 @@ public class SMTPAuthenticatorTest extends CamelTestSupport {
 			@Override
 			public void configure() {
 				from(
-						"james-smtp:localhost:2525?greeting=CamelSMTP&authHook=#myAuthHook&authRequiredToRelayHandler=#denyToRelayHandler")
+						"james-smtp:localhost:"
+								+ port
+								+ "?greeting=CamelSMTP&authHook=#myAuthHook&authRequiredToRelayHandler=#denyToRelayHandler")
 						.to("mock:result");
 			}
 		};
@@ -55,7 +66,7 @@ public class SMTPAuthenticatorTest extends CamelTestSupport {
 		String rcpt = "rcpt@localhost";
 		String body = "Subject: test\r\n\r\nTestmail";
 		AuthenticatingSMTPClient client = new AuthenticatingSMTPClient();
-		client.connect("localhost", 2525);
+		client.connect("localhost", port);
 		;
 		client.elogin("localhost");
 		// client.execTLS();
@@ -80,7 +91,7 @@ public class SMTPAuthenticatorTest extends CamelTestSupport {
 		String rcpt = "rcpt@localhost";
 		String body = "Subject: test\r\n\r\nTestmail";
 		AuthenticatingSMTPClient client = new AuthenticatingSMTPClient();
-		client.connect("localhost", 2525);
+		client.connect("localhost", port);
 		client.elogin("localhost");
 		// client.execTLS();
 		boolean isAuthenticated = client.auth(AUTH_METHOD.PLAIN, TEST_USER,
@@ -107,7 +118,7 @@ public class SMTPAuthenticatorTest extends CamelTestSupport {
 		String rcpt = "rcpt@localhost";
 		String body = "Subject: test\r\n\r\nTestmail";
 		SMTPClient client = new SMTPClient();
-		client.connect("localhost", 2525);
+		client.connect("localhost", port);
 		client.helo("localhost");
 		// client.execTLS();
 		try {

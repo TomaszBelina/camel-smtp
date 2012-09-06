@@ -29,8 +29,10 @@ import org.apache.camel.EndpointInject;
 import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
+import org.apache.camel.test.AvailablePortFinder;
 import org.apache.camel.test.junit4.CamelTestSupport;
 import org.apache.commons.net.smtp.SMTPClient;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 // TODO: Auto-generated Javadoc
@@ -42,6 +44,13 @@ public class SMTPTest extends CamelTestSupport {
 	/** The result endpoint. */
 	@EndpointInject(uri = "mock:result")
 	protected MockEndpoint resultEndpoint;
+
+	private static int port = 0;
+
+	@BeforeClass
+	public static void findPort() {
+		port = AvailablePortFinder.getNextAvailable();
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -55,7 +64,7 @@ public class SMTPTest extends CamelTestSupport {
 			public void configure() {
 				// from("file://d:/tmp?noop=true").to("mock:result");
 
-				from("james-smtp:localhost:2525").to("mock:result");
+				from("james-smtp:localhost:" + port).to("mock:result");
 			}
 		};
 	}
@@ -73,7 +82,7 @@ public class SMTPTest extends CamelTestSupport {
 		String rcpt = "rcpt@localhost";
 		String body = "Subject: test\r\n\r\nTestmail";
 		SMTPClient client = new SMTPClient();
-		client.connect("localhost", 2525);
+		client.connect("localhost", port);
 		client.helo("localhost");
 		client.setSender(sender);
 		client.addRecipient(rcpt);
