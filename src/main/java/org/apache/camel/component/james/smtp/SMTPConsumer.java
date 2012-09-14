@@ -107,8 +107,15 @@ public class SMTPConsumer extends DefaultConsumer {
 		} else {
 			server = new NettyServer(protocol);
 		}
-		server.setListenAddresses(new InetSocketAddress(config.getBindIP(),
-				config.getBindPort()));
+		// if the IP equeals '*' then bind to the wildcard address
+		if (config.getBindIP().equals("all")) {
+			server.setListenAddresses(new InetSocketAddress(config
+					.getBindPort()));
+		} else {
+			server.setListenAddresses(new InetSocketAddress(config.getBindIP(),
+					config.getBindPort()));
+		}
+
 		server.bind();
 	}
 
