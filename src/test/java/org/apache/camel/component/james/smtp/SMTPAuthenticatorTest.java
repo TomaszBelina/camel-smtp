@@ -1,8 +1,10 @@
 package org.apache.camel.component.james.smtp;
 
+import java.util.ArrayList;
+
 import org.apache.camel.EndpointInject;
 import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.component.james.smtp.relay.DenyToRelayHandler;
+import org.apache.camel.component.james.smtp.relay.AllowToRelayHandler;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.impl.JndiRegistry;
 import org.apache.camel.test.AvailablePortFinder;
@@ -37,7 +39,8 @@ public class SMTPAuthenticatorTest extends CamelTestSupport {
 	protected JndiRegistry createRegistry() throws Exception {
 		JndiRegistry registry = super.createRegistry();
 		registry.bind("myAuthHook", new TestSMTPAuthenticator());
-		registry.bind("denyToRelayHandler", new DenyToRelayHandler());
+		registry.bind("allowToRelayHandler", new AllowToRelayHandler());
+		registry.bind("domainList", new ArrayList<String>(0));
 		return registry;
 	}
 
@@ -54,7 +57,7 @@ public class SMTPAuthenticatorTest extends CamelTestSupport {
 				from(
 						"james-smtp:localhost:"
 								+ port
-								+ "?greeting=CamelSMTP&authHook=#myAuthHook&authRequiredToRelayHandler=#denyToRelayHandler")
+								+ "?greeting=CamelSMTP&authHook=#myAuthHook&authRequiredToRelayHandler=#allowToRelayHandler&localDomains=,,")
 						.to("mock:result");
 			}
 		};
