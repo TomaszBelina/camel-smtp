@@ -72,6 +72,8 @@ public class SMTPURIConfiguration implements SMTPConfiguration {
 
 	private Encryption encryption;
 
+	private List<Binding> additionalBindings;
+
 	/**
 	 * Instantiates a new sMTPURI configuration.
 	 * 
@@ -244,7 +246,7 @@ public class SMTPURIConfiguration implements SMTPConfiguration {
 	 *            the new consumer hook
 	 */
 	public void setMessageHook(DefaultMessageHook consumerHook) {
-		this.messageHook = consumerHook;
+		messageHook = consumerHook;
 	}
 
 	public void setEncryption(Encryption encryption) {
@@ -340,6 +342,14 @@ public class SMTPURIConfiguration implements SMTPConfiguration {
 	 */
 	public boolean useHeloEhloEnforcement() {
 		return enforceHeloEhlo;
+	}
+
+	public List<Binding> getAdditionalBindings() {
+		return additionalBindings;
+	}
+
+	public void setAdditionalBindings(List<Binding> additionalBindings) {
+		this.additionalBindings = additionalBindings;
 	}
 
 }
