@@ -19,14 +19,11 @@
 package org.apache.camel.component.james.smtp;
 
 import java.net.InetSocketAddress;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.camel.Endpoint;
 import org.apache.camel.Processor;
 import org.apache.camel.component.james.smtp.relay.AbstractAuthRequiredToRelayHandler;
 import org.apache.camel.impl.DefaultConsumer;
-import org.apache.james.protocols.api.Encryption;
 import org.apache.james.protocols.api.logger.ProtocolLoggerAdapter;
 import org.apache.james.protocols.netty.NettyServer;
 import org.apache.james.protocols.smtp.SMTPProtocol;
@@ -45,7 +42,7 @@ public class SMTPConsumer extends DefaultConsumer {
 	final SMTPURIConfiguration config;
 
 	/** The server. */
-	private final List<NettyServer> servers = new ArrayList<NettyServer>();
+	private NettyServer server;
 
 	/** The chain. */
 	private SMTPProtocolHandlerChain chain;
@@ -105,34 +102,21 @@ public class SMTPConsumer extends DefaultConsumer {
 		SMTPProtocol protocol = new SMTPProtocol(chain, config,
 				new ProtocolLoggerAdapter(LOG));
 		// check whether secure connection (either TLS or STARTTLS) is required
-
-		servers.add(bindNettyServer(config.getBindIP(), config.getBindPort(),
-				protocol, config.getEncryption()));
-
-		if (config.getAdditionalBindings() != null) {
-			for (Binding b : config.getAdditionalBindings()) {
-				servers.add(bindNettyServer(b.getIP(), b.getPort(), protocol,
-						b.getEncryption()));
-			}
-		}
-	}
-
-	private NettyServer bindNettyServer(String ip, int port,
-			SMTPProtocol protocol, Encryption encryption) throws Exception {
-		NettyServer server;
-		if (encryption != null) {
-			server = new NettyServer(protocol, encryption);
+		if (config.getEncryption() != null) {
+			server = new NettyServer(protocol, config.getEncryption());
 		} else {
 			server = new NettyServer(protocol);
 		}
 		// if the IP equeals '*' then bind to the wildcard address
-		if (ip.equals("all")) {
-			server.setListenAddresses(new InetSocketAddress(port));
+		if (config.getBindIP().equals("all")) {
+			server.setListenAddresses(new InetSocketAddress(config
+					.getBindPort()));
 		} else {
-			server.setListenAddresses(new InetSocketAddress(ip, port));
+			server.setListenAddresses(new InetSocketAddress(config.getBindIP(),
+					config.getBindPort()));
 		}
+
 		server.bind();
-		return server;
 	}
 
 	/**
@@ -144,9 +128,7 @@ public class SMTPConsumer extends DefaultConsumer {
 	@Override
 	protected void doStop() throws Exception {
 		super.doStop();
-		for (NettyServer s : servers) {
-			s.unbind();
-		}
+		server.unbind();
 	}
 
 }
