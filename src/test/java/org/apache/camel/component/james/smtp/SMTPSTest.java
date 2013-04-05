@@ -55,7 +55,6 @@ public class SMTPSTest extends CamelTestSupport {
 		};
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	public void testSendMatchingMessage() throws Exception {
 		String sender = "sender@localhost";
