@@ -1,5 +1,6 @@
 /target/
-/.settings
-/.classpath/
+/.settings/
+/.classpath
 /test-output/
 /.project
+/bin/
