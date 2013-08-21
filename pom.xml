@@ -14,7 +14,7 @@
 	<groupId>org.apache.camel</groupId>
 	<artifactId>camel-james-smtp</artifactId>
 	<name>Camel James SMTP Server</name>
-	<version>2.11-SNAPSHOT</version>
+	<version>2.11.1</version>
 	<description>Camel component which consume messages via SMTP</description>
 	<url>https://github.com/normanmaurer/camel-smtp</url>
 	<inceptionYear>2010</inceptionYear>
@@ -22,7 +22,7 @@
 
 
 	<properties>
-		<camel.version>2.11-SNAPSHOT</camel.version>
+		<camel.version>2.11.1</camel.version>
 		<james.protocols.version>1.6.3</james.protocols.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
@@ -231,7 +231,7 @@
 		<dependency>
 			<groupId>commons-net</groupId>
 			<artifactId>commons-net</artifactId>
-			<version>3.2</version>
+			<version>3.3</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
